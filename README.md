@@ -1,4 +1,4 @@
-# Senior DevSecOps Lead Technical Assessment
+# DevSecOps Technical Assessment
 
 This repository contains the complete implementation of the DevSecOps technical assessment, demonstrating enterprise-grade security practices, infrastructure automation, and CI/CD pipeline design for a microservices architecture.
 
