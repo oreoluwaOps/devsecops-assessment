@@ -1,0 +1,132 @@
+# Trivy Security Scanner Configuration
+
+# Vulnerability Database
+db:
+  # Skip database update (for CI environments with cached DB)
+  skip-update: false
+  # Database cache directory
+  cache-dir: /tmp/trivy-cache
+
+# Scanner Configuration
+scanner:
+  # Scanners to enable
+  scanners:
+    - vuln
+    - secret
+    - config
+  
+  # Skip files and directories
+  skip-files:
+    - "**/*.md"
+    - "**/LICENSE"
+    - "**/Dockerfile"
+    - "**/docker-compose.yml"
+  
+  # Skip directories
+  skip-dirs:
+    - ".git"
+    - "target"
+    - "build"
+    - "node_modules"
+
+# Vulnerability Configuration
+vulnerability:
+  # Vulnerability types to detect
+  type:
+    - os
+    - library
+  
+  # Severity levels to report
+  severity:
+    - HIGH
+    - CRITICAL
+  
+  # Ignore unfixed vulnerabilities
+  ignore-unfixed: true
+  
+  # Exit code for vulnerabilities
+  exit-code: 1
+
+# Secret Detection Configuration
+secret:
+  # Enable secret detection
+  enable: true
+  
+  # Configuration for secret scanning
+  config: |
+    global:
+      disable-entropy: false
+      disable-entropy-patterns: false
+    
+    rules:
+      - id: aws-access-key
+        description: "AWS Access Key"
+        regex: '(?:A3T[A-Z0-9]|AKIA|AGPA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'
+        
+      - id: aws-secret-key
+        description: "AWS Secret Key"
+        regex: '[A-Za-z0-9/+=]{40}'
+        
+      - id: github-token
+        description: "GitHub Token"
+        regex: 'ghp_[A-Za-z0-9]{36}'
+        
+      - id: slack-webhook
+        description: "Slack Webhook"
+        regex: 'https://hooks\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]+'
+        
+      - id: database-url
+        description: "Database Connection String"
+        regex: '(?:postgresql|mysql|mongodb|redis)://[^\s]+'
+        
+      - id: private-key
+        description: "Private Key"
+        regex: '-----BEGIN [A-Z ]+PRIVATE KEY-----'
+
+# License Configuration
+license:
+  # License categories to flag
+  prohibited:
+    - GPL-2.0
+    - GPL-3.0
+    - AGPL-1.0
+    - AGPL-3.0
+  
+  # License categories that are restricted
+  restricted:
+    - LGPL-2.0
+    - LGPL-2.1
+    - LGPL-3.0
+
+# Output Configuration
+format: sarif
+output: trivy-results.sarif
+
+# Cache Configuration
+cache:
+  # Cache directory
+  dir: /tmp/trivy-cache
+  
+  # Clear cache before scanning
+  clear: false
+
+# Performance Configuration
+timeout: 5m
+parallel: 5
+
+# Registry Configuration
+registry:
+  # Skip TLS verification for private registries
+  insecure: false
+  
+  # Registry credentials (will be provided via environment variables)
+  # username: ""
+  # password: ""
+
+# Misconfiguration Detection
+misconfiguration:
+  # Include test files
+  include-non-failures: false
+  
+  # Trace configuration issues
+  trace: false
